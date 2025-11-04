@@ -91,10 +91,10 @@ Comentarios  |  Campo de texto libre para incluir comentarios que consideres sob
 library(readr)
 library(stringr)
 library(dplyr)
+library(tidyr)
 Datos<-read_tsv("./data/NosAutoanalizamos_TD2019 - Hoja 1 - Clean.tsv")
 Datos<-Datos%>%mutate(
   across(ends_with(".cat"),as.factor))
-
 ```
 
 ## Ejercicio 2: Inspección visual
@@ -102,7 +102,17 @@ Datos<-Datos%>%mutate(
 Inspecciona visualmente los valores del conjunto de datos (`View`) y ordena de mayor a menor y de menor a mayor cada variable.
 
 ```{r Solucion_Ej2, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+#Variables que tienen datos tipo NA
+#Variables que estan en mayuscula y minuscula
+str(Datos)
+#La variable sexo, tiene tres valores , pero deberia tener 
+unique(Datos$Sex)
+#
+unique(Datos$Fold)
 
+#Como hay valors diferentes entre mayusculas y minusculas 
+datos_minusculas<-Datos%>%mutate(across(where(is.character),tolower))
+unique(datos_minusculas$Fold)
 ```
 
 # Análisis univariante de variables numéricas
@@ -131,7 +141,43 @@ etc    |
 
 
 ```{r Solucion_Ej3, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+estadisticos<-Datos%>%summarise(
+  across(ends_with(".num"),
+         list(
+           media = ~ mean(.x, na.rm = TRUE),
+          desviacion = ~ sd(.x, na.rm = TRUE),
+          mediana = ~ median(.x, na.rm = TRUE),
+          iqr = ~ IQR(.x, na.rm = TRUE)
+         ),
+         .names = "{col}_{fn}"
+         )
+          
+)
 
+tabla_final <- estadisticos %>%
+  
+  # Paso 1: Usar pivot_longer
+  # Convertimos la tabla ancha (1 fila, muchas columnas) en larga
+  pivot_longer(
+    cols = everything(),
+    names_to = "Variable",
+    values_to = "valor"
+  ) %>%
+  
+  separate(
+    col = Variable,
+    into = c("asignatura", "stat"),
+    sep = "_" # El guion bajo es el separador
+  ) %>%
+ 
+  pivot_wider(
+    names_from = stat,
+    values_from = valor
+  )%>%
+  mutate(
+    'mean±sd'=paste0(round(media,2),"±",round(desviacion,2))
+  )
+tabla_final
 ```
 
 ## Ejercicio 4: Distribución de datos

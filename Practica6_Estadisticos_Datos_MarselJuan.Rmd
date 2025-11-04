@@ -189,6 +189,29 @@ Representa gráficamente la curva de notas de la asignatura ALG estimando la dis
 
 ```{r Solucion_Ej4, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
 
+
+library(ggplot2)
+ggplot(Datos, aes(x=ALG.num))+
+       geom_histogram(aes(y=stat(density)),
+                      binwidth = 1,      # Ancho de las barras (1 punto de nota)
+                      fill = "blue", # Color de relleno
+                      color = "white",   # Color del borde de las barras
+                      alpha = 0.7 )+
+        geom_density(
+                    color = "red",  
+                    linewidth = 1) + 
+        geom_vline(
+                    xintercept = tabla_final$media["ALG.num"], # Posición de la línea (la media que calculamos)
+                    color = "darkblue",    # Color de la línea
+                    linetype = "dashed",   # Estilo de línea (discontinua)
+                    linewidth = 1) +
+        labs(
+          title = "Distribución de Notas de la Asignatura ALG",
+          x = "Nota de ALG",
+          y = "Densidad"
+        )
+
+
 ```
 
 ## Ejercicio 5: Test de normalidad de la distribución de datos
@@ -196,7 +219,8 @@ Representa gráficamente la curva de notas de la asignatura ALG estimando la dis
 Compara la distribución de probabilidad de las notas de la asignatura ANM con la de una Gaussiana empleando la función `qqPlot` (quantile-quantile plot) de la librería `car`, que representa gráficamente los cuantiles de la distribución analizada respecto de los de una distribución normal (Gaussiana).
 
 ```{r Solucion_Ej5, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-
+library(car)
+qqPlot(Datos$ANM.num)
 ```
 
 # Análisis univariante de variables categóricas

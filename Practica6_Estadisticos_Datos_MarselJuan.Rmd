@@ -250,8 +250,18 @@ mosaicplot(tabla_contingencia, main = "Tabla de contigencia  ALG y ANM", color =
   * Compara los resultados para el coeficiente de correlación de Pearson (para variables numéricas) y de Spearman (para variables numéricas ordinales).
 
 ```{r Solucion_Ej7, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+datos_matriz_num<-Datos%>%
+              select(ends_with(".num"))
+#Calculamos la matriz de covarianza
+matriz_cov <- cov(datos_matriz_num, use = "pairwise.complete.obs")
+#Correlacion Pearson
+matriz_cor_pearson<-cor(datos_matriz_num, use = "pairwise.complete.obs",method = "pearson")
+#Correlacion Spearman
+matriz_cor_spearman<-cor(datos_matriz_num, use = "pairwise.complete.obs",method = "spearman")
 
 ```
+
+
 
 La correlación de Pearson sirve para cuando la relación entre dos variables es lineal, mientras que la de Spearman es robusta frente a relaciones no lineales en datos ordenados.
 
@@ -260,7 +270,35 @@ La correlación de Pearson sirve para cuando la relación entre dos variables es
 Para comprobarlo, vamos a aplicar una función no lineal a una de las variables y a calcular la correlación usando los métodos de Pearson y Spearman. Compruébalo entre las variables `sqrt(ALG.num)` y `MD.num`, comparando con los resultados anteriores. 
 
 ```{r Solucion_Ej7 bis, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
+#Matrices para ALG.num y MD.num
+cor_pearson <- cor(Datos$ALG.num, Datos$MD.num, 
+                        method = "pearson", 
+                        use = "pairwise.complete.obs")
 
+cor_spearman <- cor(Datos$ALG.num, Datos$MD.num, 
+                         method = "spearman", 
+                         use = "pairwise.complete.obs")
+#Calculamos para sqrt(ALG.num) y MD.num
+sqrt_ALG_num <- Datos %>%
+  mutate(sqrt_ALG.num = sqrt(ALG.num))
+
+cor_pearson_sqrt <- cor(sqrt_ALG_num$sqrt_ALG.num, Datos$MD.num, 
+                        method = "pearson", 
+                        use = "pairwise.complete.obs")
+
+cor_spearman_sqrt <- cor(sqrt_ALG_num$sqrt_ALG.num, Datos$MD.num, 
+                         method = "spearman", 
+                         use = "pairwise.complete.obs")
+
+cat("Comparación de Correlaciones")
+
+cat("Correlación de Pearson:\n")
+cat(paste("ALG vs MD:     ", round(cor_pearson, 6), "\n"))
+cat(paste("sqrt(ALG) vs MD:", round(cor_pearson_sqrt, 6), "\n\n"))
+
+cat("Correlación de Spearman:\n")
+cat(paste("ALG vs MD:     ", round(cor_spearman, 6), "\n"))
+cat(paste("sqrt(ALG) vs MD:", round(cor_spearman_sqrt, 6), "\n"))
 ```
 
 ## Ejercicio 8: Representación gráfica de correlación entre variables

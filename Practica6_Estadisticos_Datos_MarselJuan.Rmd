@@ -234,7 +234,11 @@ Vamos a calcular la frecuencia de cada valor en las variables categóricas de ca
   * Representa la tabla de contingencia usando `mosaicplot`.
 
 ```{r Solucion_Ej6, include=TRUE, echo=TRUE, eval=TRUE, results=TRUE}
-
+frecuencia_ALG <- table(Datos$ALG.cat)
+frecuencia_ALG
+tabla_contingencia <- table(ALG = Datos$ALG.cat, ANM = Datos$ANM.cat)
+tabla_contingencia
+mosaicplot(tabla_contingencia, main = "Tabla de contigencia  ALG y ANM", color = TRUE)
 
 ```
 
